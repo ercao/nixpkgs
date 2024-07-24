@@ -1,5 +1,4 @@
 {
-  pkgs,
   lib,
   stdenv,
   fetchFromGitHub,
@@ -15,6 +14,7 @@
   pkg-config,
   libsecret,
   darwin,
+  symlinkJoin,
 }:
 assert lib.versionAtLeast python3.version "3.5";
 let
@@ -67,7 +67,7 @@ let
       cp $out/lib/* $out/share/adapter
       cp -r adapter/scripts $out/share/adapter
       cp -t $out/share/formatters formatters/*.py
-      ln -s ${lib.getLib lldb} $out/share/lldb
+      ln -s ${symlinkJoin { name = "lldb-bin-lib"; paths = [ lldb.lib lldb.out ]; }} $out/share/lldb
       makeWrapper $out/share/adapter/codelldb $out/bin/codelldb \
         --set-default LLDB_DEBUGSERVER_PATH "${lldb.out}/bin/lldb-server"
     '';
